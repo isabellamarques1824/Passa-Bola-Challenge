@@ -157,13 +157,21 @@ def verifica_numero(msg):
 
 # Força o usuário a escolher uma opção dentro da lista fornecida.
 
-def forca_opcao(msg, lista_opcoes, msg_erro='Erro'):
+def forca_opcao(msg, lista_opcoes, msg_erro='Digite uma opção válida.'):
     opcoes = ', '.join(lista_opcoes)
     escolha = input(f"{msg}\n{opcoes}\n-> ")
     while escolha not in lista_opcoes:
         print(msg_erro)
         escolha = input(f"{msg}\n{opcoes}\n-> ")
     return escolha
+
+# Função que pega o nome do time pelo id
+
+def pega_nome_time(id_time):
+    for t in times:
+        if t['id'] == id_time:
+            return t['nome']
+    return "Time desconhecido"
 
 # Função de cadastro de usuário
 
@@ -215,9 +223,10 @@ def cadastrar_usuario():
     print(f"Usuário {username} cadastrado com sucesso!")
 
 
+# Função que faz login
+
 def login_usuario():
     print("\n--- Login de Usuário ---")
-
     username_email = input("Digite o seu username ou o seu email: ")
     senha = input("Digite a sua senha: ")
 
@@ -225,23 +234,74 @@ def login_usuario():
     if username_email in usuarios:
         if usuarios[username_email]["senha"] == senha:
             print("✅ Login realizado com sucesso!")
-            return True
+            return usuarios[username_email]  # retorna o dict do usuário
         else:
             print("❌ Senha incorreta.")
-            return False
+            return None
 
     # Verificar login por email
     for user, dados in usuarios.items():
         if dados["email"] == username_email:
             if dados["senha"] == senha:
                 print("✅ Login realizado com sucesso!")
-                return True
+                return dados  # retorna o dict do usuário
             else:
                 print("❌ Senha incorreta.")
-                return False
+                return None
 
     # Se não achou nem username nem email
     print("❌ Usuário ou e-mail não encontrado.")
-    return False
+    return None
 
+#logo passabola
+
+def logo():
+    print("=======================================")
+    print("         ⚽ PASSABOLA ⚽")
+    print("        Futebol Feminino")
+    print("=======================================")
+
+def home(usuario=None):
+    logo()
+
+    # Principais notícias
+
+    print("\n--- Principais Notícias ---\n")
+    for noticia in noticias[:2]:
+        print(f"{noticia['data']}: {noticia['titulo']}")
+
+    # Principais jogos
+
+    print("\n--- Principais Jogos ---\n")
+    for jogo in jogos[:2]:  # pega os dois primeiros jogos
+        if jogo['tipo'] == 'profissional':
+            time1 = pega_nome_time(jogo['times'][0])
+            time2 = pega_nome_time(jogo['times'][1])
+            print(f"{jogo['data']} {jogo['hora']} - {time1} x {time2} | Status: {jogo['status']}")
+        else:
+            print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
+
+    if usuario is None or usuario['tipo'] == "comum":
+        escolha =  forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Ver notícias", "Calendário de jogos", "Sair"] )
+    if usuario['tipo'] == 'jogadora':
+        escolha = forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Meu calendario", "Proximos encontros", "Profissional"])
+
+
+
+while True:
+    logo()
+    print("\nBem-vinda ao PassaBola! Aqui você acompanha tudo sobre futebol feminino.\n")
+    escolha = forca_opcao("Escolha uma opção (digite a sua escolha): ", ["Login", "Cadastro", "Entrar como visitante"])
+
+    if escolha == "Login":
+        usuario_logado = login_usuario()
+        if usuario_logado:
+            home(usuario_logado)
+        else:
+            print("Não foi possível realizar o login. Tente novamente ou cadastre-se.")
+
+    elif escolha == "Cadastro":
+        cadastrar_usuario()
+    else:
+        home()
 
