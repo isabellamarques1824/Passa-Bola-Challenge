@@ -213,3 +213,35 @@ def cadastrar_usuario():
 
     usuarios[username] = novo_usuario
     print(f"Usuário {username} cadastrado com sucesso!")
+
+
+def login_usuario():
+    print("\n--- Login de Usuário ---")
+
+    username_email = input("Digite o seu username ou o seu email: ")
+    senha = input("Digite a sua senha: ")
+
+    # Verificar login por username
+    if username_email in usuarios:
+        if usuarios[username_email]["senha"] == senha:
+            print("✅ Login realizado com sucesso!")
+            return True
+        else:
+            print("❌ Senha incorreta.")
+            return False
+
+    # Verificar login por email
+    for user, dados in usuarios.items():
+        if dados["email"] == username_email:
+            if dados["senha"] == senha:
+                print("✅ Login realizado com sucesso!")
+                return True
+            else:
+                print("❌ Senha incorreta.")
+                return False
+
+    # Se não achou nem username nem email
+    print("❌ Usuário ou e-mail não encontrado.")
+    return False
+
+
