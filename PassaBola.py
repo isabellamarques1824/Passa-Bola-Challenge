@@ -200,7 +200,9 @@ def cadastrar_usuario():
         "nome": nome,
         "sobrenome": sobrenome,
         "idade": idade,
-        "email": email
+        "email": email,
+        "amigos": [],
+        "favoritos": {"jogadoras": [], "times": []}
     }
 
     # Se for jogadora
@@ -278,6 +280,22 @@ def mostrar_lista(titulo, lista_itens):
         else:  # se for string ou outro tipo
             print(str(i+1) + ". " + str(item))
 
+def listar_noticias():
+    print("\n--- Notícias ---")
+    for noticia in noticias:
+        print(f"{noticia['data']} - {noticia['titulo']}")
+        print(f"   {noticia['conteudo']}\n")
+
+def listar_jogos():
+    print("\n--- Jogos ---")
+    for jogo in jogos:
+        if jogo['tipo'] == 'profissional':
+            time1 = pega_nome_time(jogo['times'][0])
+            time2 = pega_nome_time(jogo['times'][1])
+            print(f"{jogo['data']} {jogo['hora']} - {time1} x {time2} | Status: {jogo['status']}")
+        else:
+            print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
+
 # ver perfil
 
 def ver_perfil(usuario):
@@ -290,6 +308,60 @@ def ver_perfil(usuario):
     mostrar_lista("Amigos", usuario.get("amigos", []))
     mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
     mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
+
+# Funções de menu
+
+
+def menu_visitante():
+    while True:
+        escolha = forca_opcao(
+            "\nEscolha uma opção: ",
+            ["Ver notícias", "Calendário de jogos", "Criar conta", "Sair"]
+        )
+        if escolha == "Ver notícias":
+            listar_noticias()
+        elif escolha == "Calendário de jogos":
+            listar_jogos()
+        elif escolha == "Criar conta":
+            cadastrar_usuario()
+            usuario_logado = login_usuario()
+            if usuario_logado:
+                home(usuario_logado)
+        elif escolha == "Sair":
+            print("Saindo do modo visitante...")
+            break
+
+def menu_comum(usuario):
+    while True:
+        escolha = forca_opcao(
+            f"\n{usuario['nome']}, escolha uma opção: ",
+            ["Meu perfil", "Ver notícias", "Calendário de jogos", "Sair"]
+        )
+        if escolha == "Meu perfil":
+            ver_perfil(usuario)
+        elif escolha == "Ver notícias":
+            listar_noticias()
+        elif escolha == "Calendário de jogos":
+            listar_jogos()
+        elif escolha == "Sair":
+            print("Logout realizado.")
+            break
+
+
+def menu_jogadora(usuario):
+    while True:
+        escolha = forca_opcao(
+            f"\n{usuario['nome']} (jogadora), escolha uma opção: ",
+            ["Meu perfil", "Meu calendário", "Próximos encontros", "Sair"]
+        )
+        if escolha == "Meu perfil":
+            ver_perfil(usuario)
+        elif escolha == "Meu calendário":
+            print("⚽ Aqui vai a lógica de calendário da jogadora.")
+        elif escolha == "Próximos encontros":
+            print("📅 Aqui vai a lógica de próximos jogos/treinos.")
+        elif escolha == "Sair":
+            print("Logout realizado.")
 
 # função principal  - home
 
@@ -313,23 +385,13 @@ def home(usuario=None):
         else:
             print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
 
-    if usuario is None or usuario['tipo'] == "comum":
-        escolha =  forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Ver notícias", "Calendário de jogos", "Sair"] )
-        if usuario is None:
-            if escolha == "Meu perfil":
-                cadastrar_usuario()
-                usuario_logado = login_usuario()
-                if usuario_logado:
-                    home(usuario_logado)
-        else:
-            if escolha == "Meu perfil":
-                ver_perfil(usuario)
-
-    elif usuario['tipo'] == 'jogadora':
-        escolha = forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Meu calendario", "Proximos encontros", "Profissional"])
-        if escolha == "Meu perfil":
-            ver_perfil(usuario)
-
+    # Decide qual menu chamar
+    if usuario is None:
+        menu_visitante()
+    elif usuario['tipo'] == "comum":
+        menu_comum(usuario)
+    elif usuario['tipo'] == "jogadora":
+        menu_jogadora(usuario)
 
 # =========================================
 # Loop principal
