@@ -3,6 +3,7 @@
 # =========================================
 
 # Dicionário - Usuários
+
 usuarios = {
     "isa123": {
         "senha": "1234",
@@ -261,6 +262,37 @@ def logo():
     print("        Futebol Feminino")
     print("=======================================")
 
+#função que mostra listas/ dicionários
+
+def mostrar_lista(titulo, lista_itens):
+    print(f"\n--- {titulo} ---")
+    if len(lista_itens) == 0:
+        print(f"Nenhum {titulo.lower()} encontrado.")
+        return
+    for i in range(len(lista_itens)):
+        item = lista_itens[i]
+        if type(item) == dict:  # se for um dicionário
+            print(str(i+1) + ".")
+            for chave in item:
+                print("   " + chave + ": " + str(item[chave]))
+        else:  # se for string ou outro tipo
+            print(str(i+1) + ". " + str(item))
+
+# ver perfil
+
+def ver_perfil(usuario):
+    logo()
+    print("--- Informações do Perfil ---")
+    print(f"Nome: {usuario['nome']} {usuario.get('sobrenome', '')}")
+    print(f"Idade: {usuario['idade']}")
+    print(f"Email: {usuario['email']}")
+
+    mostrar_lista("Amigos", usuario.get("amigos", []))
+    mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
+    mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
+
+# função principal  - home
+
 def home(usuario=None):
     logo()
 
@@ -283,9 +315,25 @@ def home(usuario=None):
 
     if usuario is None or usuario['tipo'] == "comum":
         escolha =  forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Ver notícias", "Calendário de jogos", "Sair"] )
-    if usuario['tipo'] == 'jogadora':
-        escolha = forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Meu calendario", "Proximos encontros", "Profissional"])
+        if usuario is None:
+            if escolha == "Meu perfil":
+                cadastrar_usuario()
+                usuario_logado = login_usuario()
+                if usuario_logado:
+                    home(usuario_logado)
+        else:
+            if escolha == "Meu perfil":
+                ver_perfil(usuario)
 
+    elif usuario['tipo'] == 'jogadora':
+        escolha = forca_opcao("\nEscolha uma opção (digite a sua escolha): ", ["Meu perfil", "Meu calendario", "Proximos encontros", "Profissional"])
+        if escolha == "Meu perfil":
+            ver_perfil(usuario)
+
+
+# =========================================
+# Loop principal
+# =========================================
 
 
 while True:
@@ -302,6 +350,10 @@ while True:
 
     elif escolha == "Cadastro":
         cadastrar_usuario()
+        usuario_logado = login_usuario()
+        if usuario_logado:
+            home(usuario_logado)
     else:
         home()
+
 
