@@ -177,54 +177,55 @@ def pega_nome_time(id_time):
 # Função de cadastro de usuário
 
 def cadastrar_usuario():
-    print("\n--- Cadastro de Usuário ---")
-    username = input("Escolha um nome de usuário: ")
+    while True:
+        print("\n--- Cadastro de Usuário ---")
+        username = input("Escolha um nome de usuário: ")
 
-    # verifica se já existe
-    if username in usuarios:
-        print("Erro: nome de usuário já existe!")
-        return
+        # verifica se já existe
+        if username in usuarios:
+            print("Erro: nome de usuário já existe!")
+            continue
 
-    senha = input("Digite a senha: ")
-    nome = input("Nome: ")
-    sobrenome = input("Sobrenome: ")
-    idade = verifica_numero("Digite a sua idade: ")
-    email = input("Email: ")
+        senha = input("Digite a senha: ")
+        nome = input("Nome: ")
+        sobrenome = input("Sobrenome: ")
+        idade = verifica_numero("Digite a sua idade: ")
+        email = input("Email: ")
 
-    # tipo de usuário (comum ou jogadora ou admin)
-    tipo = forca_opcao("Escolha o tipo de usuário:", ["comum", "jogadora", "administrador"])
+        # tipo de usuário (comum ou jogadora ou admin)
+        tipo = forca_opcao("Escolha o tipo de usuário:", ["comum", "jogadora", "administrador"])
 
-    novo_usuario = {
-        "senha": senha,
-        "tipo": tipo,
-        "nome": nome,
-        "sobrenome": sobrenome,
-        "idade": idade,
-        "email": email,
-        "amigos": [],
-        "favoritos": {"jogadoras": [], "times": []}
-    }
+        novo_usuario = {
+            "senha": senha,
+            "tipo": tipo,
+            "nome": nome,
+            "sobrenome": sobrenome,
+            "idade": idade,
+            "email": email,
+            "amigos": [],
+            "favoritos": {"jogadoras": [], "times": []}
+        }
 
-    # Se for jogadora
+        # Se for jogadora
 
-    if tipo == "jogadora":
+        if tipo == "jogadora":
 
-        rg = input("Digite o seu RG: ")
+            rg = input("Digite o seu RG: ")
 
-        # categoria automática pela idade
-        if idade <= 15:
-            categoria = "Sub-15"
-        elif idade <= 17:
-            categoria = "Sub-17"
-        else:
-            categoria = "Adulta"
+            # categoria automática pela idade
+            if idade <= 15:
+                categoria = "Sub-15"
+            elif idade <= 17:
+                categoria = "Sub-17"
+            else:
+                categoria = "Adulta"
 
-        novo_usuario["rg"] = rg
-        novo_usuario["categoria"] = categoria
+            novo_usuario["rg"] = rg
+            novo_usuario["categoria"] = categoria
 
-    usuarios[username] = novo_usuario
-    print(f"Usuário {username} cadastrado com sucesso!")
-
+        usuarios[username] = novo_usuario
+        print(f"Usuário {username} cadastrado com sucesso!")
+        break
 
 # Função que faz login
 
