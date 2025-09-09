@@ -106,8 +106,18 @@ quadras = [
 
 # Notícias e artigos
 noticias = [
-    {"id": 1, "titulo": "Novo campeonato anunciado!", "conteudo": "O novo campeonato vai...", "data": "2025-09-01"},
-    {"id": 2, "titulo": "Entrevista com jogadora X", "conteudo": "A jogadora X comentou...", "data": "2025-09-02"}
+    {
+        "id": 1,
+        "titulo": "Novo campeonato anunciado!",
+        "conteudo": "A Confederação anunciou a realização da Copa Feminina 2025, \nque contará com times profissionais e amadores de todo o país. As inscrições começam na próxima semana e o \n torneio terá jogos espalhados por diversas quadras, prometendo movimentar o futebol feminino.",
+        "data": "2025-09-01"
+    },
+    {
+        "id": 2,
+        "titulo": "Entrevista com jogadora X",
+        "conteudo": "A jogadora Paula Alves, destaque do Flamengo, comentou sobre a\n importância do esporte feminino e como os campeonatos ajudam a revelar novos talentos. Ela também falou \nsobre sua preparação para os próximos jogos e deu dicas para jovens que querem se profissionalizar.",
+        "data": "2025-09-02"
+    }
 ]
 
 # Jogos: amadores e profissionais
@@ -282,12 +292,14 @@ def mostrar_lista(titulo, lista_itens):
             print(str(i+1) + ". " + str(item))
 
 def listar_noticias():
+    logo()
     print("\n--- Notícias ---")
     for noticia in noticias:
         print(f"{noticia['data']} - {noticia['titulo']}")
         print(f"   {noticia['conteudo']}\n")
 
 def listar_jogos():
+    logo()
     print("\n--- Jogos ---")
     for jogo in jogos:
         if jogo['tipo'] == 'profissional':
