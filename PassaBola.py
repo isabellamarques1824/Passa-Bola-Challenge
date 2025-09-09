@@ -296,6 +296,69 @@ def listar_jogos():
         else:
             print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
 
+#função que mostra os jogos em que a jogadora pode se inscrever
+
+def proximos_encontros(usuario):
+    print("\n--- Próximos Encontros ---\n")
+    jogos_amadores = [j for j in jogos if j["tipo"] == "amador"]
+
+    if not jogos_amadores:
+        print("Nenhum jogo amador disponível para inscrição.")
+        return
+
+    # mostra lista
+    i = 1
+    for jogo in jogos_amadores:
+        print(f"{i}. {jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
+        i += 1
+
+    opcao = int(input("\nDigite o número do jogo para se inscrever (ou 0 para cancelar): "))
+
+    if opcao == 0:
+        return
+
+    jogo_escolhido = jogos_amadores[opcao - 1]
+
+    # descobrir username da jogadora logada
+    username = None
+    for user, dados in usuarios.items():
+        if dados is usuario:
+            username = user
+            break
+
+    # checar inscrição
+    if username in jogo_escolhido["inscritas"]:
+        print("⚠️ Você já está inscrita nesse jogo!")
+    else:
+        jogo_escolhido["inscritas"].append(username)
+        print("✅ Inscrição realizada com sucesso!")
+
+# função que mostra o calendario das jogadoras
+
+def meu_calendario(usuario):
+    print("\n--- Meu Calendário ---\n")
+
+    # Descobrir o username pela referência no dicionário
+    username = None
+    for user, dados in usuarios.items():
+        if dados is usuario:
+            username = user
+            break
+
+    encontrou = False
+    for jogo in jogos:
+        if username in jogo.get("inscritas", []):
+            encontrou = True
+            if jogo["tipo"] == "profissional":
+                time1 = pega_nome_time(jogo["times"][0])
+                time2 = pega_nome_time(jogo["times"][1])
+                print(f"{jogo['data']} {jogo['hora']} - {time1} x {time2} | Status: {jogo['status']}")
+            else:
+                print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
+
+    if not encontrou:
+        print("📌 Você ainda não está inscrita em nenhum jogo.")
+
 # ver perfil
 
 def ver_perfil(usuario):
@@ -352,16 +415,19 @@ def menu_jogadora(usuario):
     while True:
         escolha = forca_opcao(
             f"\n{usuario['nome']} (jogadora), escolha uma opção: ",
-            ["Meu perfil", "Meu calendário", "Próximos encontros", "Sair"]
+            ["Meu perfil", "Meu calendário", "Próximos encontros", "Profissional", "Sair"]
         )
         if escolha == "Meu perfil":
             ver_perfil(usuario)
         elif escolha == "Meu calendário":
-            print("⚽ Aqui vai a lógica de calendário da jogadora.")
+            meu_calendario(usuario)
         elif escolha == "Próximos encontros":
-            print("📅 Aqui vai a lógica de próximos jogos/treinos.")
+            proximos_encontros(usuario)
+        elif escolha == "Profissional":
+            print("aqui vai o profissional(n fiz ainda)")
         elif escolha == "Sair":
             print("Logout realizado.")
+            break
 
 # função principal  - home
 
