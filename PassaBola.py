@@ -442,6 +442,35 @@ def menu_jogadora(usuario):
             print("Logout realizado.")
             break
 
+# area ADM
+
+def menu_admin(usuario):
+    while True:
+        escolha = forca_opcao(
+            "\n--- Menu do Administrador ---\nEscolha uma seção:",
+            ["Times", "Notícias", "Campeonatos", "Jogos", "Sair"]
+        )
+
+        if escolha == "Times":
+            print('aqui vai a função')
+            #menu_times()
+
+        elif escolha == "Notícias":
+            print('aqui vai a função')
+            #menu_noticias()
+
+        elif escolha == "Campeonatos":
+            print('aqui vai a função')
+            #menu_campeonatos()
+
+        elif escolha == "Jogos":
+            print('aqui vai a função')
+            #menu_jogos()
+
+        elif escolha == "Sair":
+            print("Saindo do menu administrador.")
+            break
+
 # função principal  - home
 
 def home(usuario=None):
