@@ -378,13 +378,12 @@ def registrar_noticia():
 
 def registrar_campeonato():
     print("\n--- Adicionar Campeonato ---")
-    id = input("Digite o id do campeonato: ")
     nome = input("Digite o nome do campeonato: ")
     data = input("Digite a data do campeonato (DD/MM/AAAA): ")
     local = input("Digite o local do campeonato: ")
 
     campeonato = {
-        "id": id,
+        "id": len(campeonatos) + 1,
         "nome": nome,
         "data": data,
         "local": local,
@@ -394,6 +393,102 @@ def registrar_campeonato():
 
     campeonatos.append(campeonato)
     print(f"✅ Campeonato '{nome}' adicionado com sucesso!")
+
+
+def registrar_jogo():
+    print("\n--- Registrar Novo Jogo ---")
+
+    tipo = forca_opcao("Escolha o tipo de jogo:", ["amador", "profissional"])
+
+    # id automático (último id + 1)
+    novo_id = len(jogos) + 1
+
+    quadra_id = verifica_numero("Digite o ID da quadra: ")
+    data = input("Digite a data do jogo (AAAA-MM-DD): ")
+    hora = input("Digite a hora do jogo (HH:MM): ")
+
+    if tipo == "amador":
+        categoria = input("Digite a categoria (ex: Sub-17, Adulta, etc): ")
+        taxa = float(input("Digite a taxa de inscrição: "))
+        novo_jogo = {
+            "id": novo_id,
+            "tipo": "amador",
+            "status": "agendado",
+            "quadra": quadra_id,
+            "data": data,
+            "hora": hora,
+            "categoria": categoria,
+            "inscritas": [],
+            "taxa": taxa,
+            "resultado": None
+        }
+    else:  # profissional
+        print("\nTimes disponíveis:")
+        for t in times:
+            print(f"{t['id']} - {t['nome']}")
+        time1 = verifica_numero("Digite o ID do primeiro time: ")
+        time2 = verifica_numero("Digite o ID do segundo time: ")
+
+        campeonato_id = input("Digite o ID do campeonato (ou deixe vazio se não houver): ")
+        campeonato_id = int(campeonato_id) if campeonato_id.strip() else None
+
+        novo_jogo = {
+            "id": novo_id,
+            "tipo": "profissional",
+            "status": "agendado",
+            "quadra": quadra_id,
+            "data": data,
+            "hora": hora,
+            "times": [time1, time2],
+            "campeonato": campeonato_id,
+            "resultado": None
+        }
+
+    jogos.append(novo_jogo)
+    print("✅ Jogo registrado com sucesso!")
+
+
+def alterar_status_jogo():
+    if not jogos:
+        print("Nenhum jogo cadastrado.")
+        return
+
+    for jogo in jogos:
+        print(f"ID: {jogo['id']} | {jogo['data']} {jogo['hora']} - Status: {jogo['status']}")
+
+    try:
+        id_jogo = int(input("Digite o ID do jogo que deseja alterar: "))
+        for jogo in jogos:
+            if jogo["id"] == id_jogo:
+                novo_status = forca_opcao(
+                    "Escolha o novo status: ",
+                    ["Agendado", "Ao vivo", "Encerrado"]
+                )
+                jogo["status"] = novo_status
+                print("✅ Status alterado com sucesso!")
+                return
+        print("⚠️ Jogo não encontrado.")
+    except ValueError:
+        print("ID inválido.")
+
+
+def menu_jogos():
+    while True:
+        escolha = forca_opcao(
+            "\n--- Gestão de Jogos ---",
+            ["Adicionar jogo", "Listar jogos", "Alterar status de jogo", "Apagar jogo", "Voltar"]
+        )
+        if escolha == "Adicionar jogo":
+            registrar_jogo()
+        elif escolha == "Listar jogos":
+            listar_jogos()
+        elif escolha == "Alterar status de jogo":
+            alterar_status_jogo()
+        elif escolha == "Apagar jogo":
+            apagar_item(jogos, "jogo")
+        elif escolha == "Voltar":
+            break
+
 
 #função que mostra os jogos em que a jogadora pode se inscrever
 
@@ -471,6 +566,38 @@ def ver_perfil(usuario):
     mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
     mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
 
+# Função para adicionar time
+def adicionar_time():
+    print("\n--- Adicionar Time ---")
+    nome = input("Nome do time: ")
+
+    # verifica se já existe
+    for t in times:
+        if t["nome"].lower() == nome.lower():
+            print("⚠️ Esse time já está cadastrado!")
+            return
+
+    tipo = forca_opcao("Tipo do time:", ["profissional", "amador"])
+
+    novo_time = {
+        "id": len(times) + 1,
+        "nome": nome,
+        "jogadoras": [],
+        "tipo": tipo
+    }
+    times.append(novo_time)
+    print(f"✅ Time '{nome}' adicionado com sucesso!")
+
+    # Função para listar times
+def listar_times():
+    print("\n--- Lista de Times ---")
+    if not times:
+        print("Nenhum time cadastrado.")
+    else:
+        for t in times:
+            print(f"ID: {t['id']} | Nome: {t['nome']} | Tipo: {t['tipo']} | Jogadoras: {len(t['jogadoras'])}")
+
+
 # Funções de menu
 def menu_visitante():
     while True:
@@ -528,6 +655,20 @@ def menu_jogadora(usuario):
 
 # area ADM
 
+def menu_times():
+    while True:
+        escolha = forca_opcao(
+            "\n--- Gestão de Times ---",
+            ["Adicionar time", "Listar times", "Apagar time", "Voltar"]
+        )
+        if escolha == "Adicionar time":
+            adicionar_time()
+        elif escolha == "Listar times":
+            listar_times()
+        elif escolha == "Apagar time":
+            apagar_item(times, "time")
+        elif escolha == "Voltar":
+            break
 
 def menu_noticias():
     while True:
@@ -571,8 +712,7 @@ def menu_admin(usuario):
         )
 
         if escolha == "Times":
-            print('aqui vai a função')
-            #menu_times()
+            menu_times()
 
         elif escolha == "Notícias":
             menu_noticias()
@@ -581,8 +721,7 @@ def menu_admin(usuario):
             menu_campeonatos()
 
         elif escolha == "Jogos":
-            print('aqui vai a função')
-            #menu_jogos()
+            menu_jogos()
 
         elif escolha == "Sair":
             print("Saindo do menu administrador.")
