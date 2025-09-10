@@ -149,8 +149,16 @@ jogos = [
 
 # Campeonatos
 campeonatos = [
-    {"id": 1, "nome": "Copa Feminina 2025", "times": [1, 2], "jogos": [2]}
+    {
+    "id": 1,
+    "nome": "Copa feminina 2025",
+    "data": 2025,
+    "local": "Brasil",
+    "times": [1,2],
+    "fase": "Agendado"}
 ]
+
+
 
 # =========================================
 # Funções do código
@@ -309,6 +317,84 @@ def listar_jogos():
         else:
             print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
 
+def listar_campeonatos():
+    print("\n--- Lista de Campeonatos ---")
+    if not campeonatos:
+        print("Nenhum campeonato cadastrado.")
+    else:
+        for campeonato in campeonatos:
+            print(f"[{campeonato['id']}] {campeonato['nome']} - {campeonato['data']} em {campeonato['local']} | Fase: {campeonato['fase']}")
+
+
+def atualizar_fase_campeonato():
+    listar_campeonatos()
+    try:
+        id_camp = int(input("\nDigite o ID do campeonato que deseja atualizar: "))
+        campeonato = next((c for c in campeonatos if c['id'] == id_camp), None)
+
+        if campeonato:
+            nova_fase = forca_opcao("Selecione a nova fase: ", ["Agendado", "Quartas", "Semifinal", "Final", "Encerrado"])
+            campeonato['fase'] = nova_fase
+            print(f"✅ Campeonato '{campeonato['nome']}' atualizado para fase: {nova_fase}")
+        else:
+            print("❌ Campeonato não encontrado.")
+    except ValueError:
+        print("❌ ID inválido.")
+
+def apagar_item(lista, tipo):
+    if not lista:
+        print(f"Nenhum {tipo} cadastrado.")
+        return
+
+    for item in lista:
+        print(f"ID: {item['id']} | {item.get('titulo', item.get('nome', 'Sem nome'))}")
+
+    try:
+        id_item = int(input(f"Digite o ID do {tipo} que deseja apagar: "))
+        for i, item in enumerate(lista):
+            if item["id"] == id_item:
+                lista.pop(i)
+                print(f"✅ {tipo.capitalize()} apagado com sucesso!")
+                return
+        print(f"⚠️ {tipo.capitalize()} não encontrado.")
+    except ValueError:
+        print("ID inválido.")
+
+
+def registrar_noticia():
+    titulo = input("Digite o título da notícia: ")
+    conteudo = input("Digite o conteúdo da notícia: ")
+    data = input("Digite a data da notícia (YYYY-MM-DD): ")
+
+    nova_noticia = {
+        "id": len(noticias) + 1,
+        "titulo": titulo,
+        "conteudo": conteudo,
+        "data": data
+    }
+
+    noticias.append(nova_noticia)
+    print("✅ Notícia registrada com sucesso!")
+
+def registrar_campeonato():
+    print("\n--- Adicionar Campeonato ---")
+    id = input("Digite o id do campeonato: ")
+    nome = input("Digite o nome do campeonato: ")
+    data = input("Digite a data do campeonato (DD/MM/AAAA): ")
+    local = input("Digite o local do campeonato: ")
+
+    campeonato = {
+        "id": id,
+        "nome": nome,
+        "data": data,
+        "local": local,
+        "times": [],
+        "fase": "Agendado"
+    }
+
+    campeonatos.append(campeonato)
+    print(f"✅ Campeonato '{nome}' adicionado com sucesso!")
+
 #função que mostra os jogos em que a jogadora pode se inscrever
 
 def proximos_encontros(usuario):
@@ -386,8 +472,6 @@ def ver_perfil(usuario):
     mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
 
 # Funções de menu
-
-
 def menu_visitante():
     while True:
         escolha = forca_opcao(
@@ -444,6 +528,41 @@ def menu_jogadora(usuario):
 
 # area ADM
 
+
+def menu_noticias():
+    while True:
+        escolha = forca_opcao(
+            "\n--- Gestão de Notícias ---",
+            ["Adicionar notícia", "Listar notícias", "Apagar notícia", "Voltar"]
+        )
+        if escolha == "Adicionar notícia":
+            registrar_noticia()
+        elif escolha == "Listar notícias":
+            listar_noticias()
+        elif escolha == "Apagar notícia":
+            apagar_item(noticias, "notícia")
+        elif escolha == "Voltar":
+            break
+
+
+def menu_campeonatos():
+    while True:
+        escolha = forca_opcao("\n--- Gestão de Campeonatos ---",
+                              ["Adicionar campeonato", "Listar campeonatos", "Atualizar fase", "Apagar campeonato",
+                               "Voltar"])
+
+        if escolha == "Adicionar campeonato":
+            registrar_campeonato()
+        elif escolha == "Listar campeonatos":
+            listar_campeonatos()
+        elif escolha == "Atualizar fase":
+            atualizar_fase_campeonato()
+        elif escolha == "Apagar campeonato":
+            apagar_item(campeonatos, "campeonato")
+        elif escolha == "Voltar":
+            break
+
+
 def menu_admin(usuario):
     while True:
         escolha = forca_opcao(
@@ -456,12 +575,10 @@ def menu_admin(usuario):
             #menu_times()
 
         elif escolha == "Notícias":
-            print('aqui vai a função')
-            #menu_noticias()
+            menu_noticias()
 
         elif escolha == "Campeonatos":
-            print('aqui vai a função')
-            #menu_campeonatos()
+            menu_campeonatos()
 
         elif escolha == "Jogos":
             print('aqui vai a função')
@@ -514,7 +631,10 @@ while True:
     if escolha == "Login":
         usuario_logado = login_usuario()
         if usuario_logado:
-            home(usuario_logado)
+            if usuario_logado['tipo']== "administrador":
+                menu_admin(usuario_logado)
+            else:
+                home(usuario_logado)
         else:
             print("Não foi possível realizar o login. Tente novamente ou cadastre-se.")
 
@@ -522,7 +642,10 @@ while True:
         cadastrar_usuario()
         usuario_logado = login_usuario()
         if usuario_logado:
-            home(usuario_logado)
+            if usuario_logado['tipo']== "administrador":
+                menu_admin(usuario_logado)
+            else:
+                home(usuario_logado)
     else:
         home()
 
