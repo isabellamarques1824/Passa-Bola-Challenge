@@ -12,8 +12,6 @@ usuarios = {
         "sobrenome": "Marques",
         "idade": 18,
         "email": "isa@gmail.com",
-        "categoria": None,
-        "nivel": None,
         "amigos": ["maria456"],
         "favoritos": {"jogadoras": ["jogadora_luiza"], "times": ["Flamengo"]}
     },
@@ -24,8 +22,6 @@ usuarios = {
         "sobrenome": "Silva",
         "idade": 20,
         "email": "maria@gmail.com",
-        "categoria": None,
-        "nivel": None,
         "amigos": ["isa123"],
         "favoritos": {"jogadoras": ["jogadora_paula"], "times": ["Flamengo"]}
     },
@@ -33,7 +29,7 @@ usuarios = {
         "senha": "paula123",
         "tipo": "jogadora",
         "nivel": "profissional",
-        "categoria": None,
+        "categoria": "Adulta",
         "nome": "Paula",
         "sobrenome": "Alves",
         "idade": 21,
@@ -46,7 +42,7 @@ usuarios = {
         "senha": "lu456",
         "tipo": "jogadora",
         "nivel": "profissional",
-        "categoria": None,
+        "categoria": "Adulta",
         "nome": "Luiza",
         "sobrenome": "Carvalho",
         "idade": 23,
@@ -87,8 +83,6 @@ usuarios = {
         "nome": "Administrador",
         "sobrenome": None,
         "email": "admin@gmail.com",
-        "categoria": None,
-        "nivel": None
     }
 }
 
@@ -155,7 +149,7 @@ campeonatos = [
     "data": 2025,
     "local": "Brasil",
     "times": [1,2],
-    "fase": "Agendado"}
+    "fase": "agendado"}
 ]
 
 
@@ -299,13 +293,6 @@ def mostrar_lista(titulo, lista_itens):
         else:  # se for string ou outro tipo
             print(str(i+1) + ". " + str(item))
 
-def listar_noticias():
-    logo()
-    print("\n--- Notícias ---")
-    for noticia in noticias:
-        print(f"{noticia['data']} - {noticia['titulo']}")
-        print(f"   {noticia['conteudo']}\n")
-
 def listar_jogos():
     logo()
     print("\n--- Jogos ---")
@@ -317,23 +304,21 @@ def listar_jogos():
         else:
             print(f"{jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
 
-def listar_campeonatos():
-    print("\n--- Lista de Campeonatos ---")
-    if not campeonatos:
-        print("Nenhum campeonato cadastrado.")
-    else:
-        for campeonato in campeonatos:
-            print(f"[{campeonato['id']}] {campeonato['nome']} - {campeonato['data']} em {campeonato['local']} | Fase: {campeonato['fase']}")
-
+def listar_noticias():
+    logo()
+    print("\n--- Notícias ---")
+    for noticia in noticias:
+        print(f"{noticia['data']} - {noticia['titulo']}")
+        print(f"   {noticia['conteudo']}\n")
 
 def atualizar_fase_campeonato():
-    listar_campeonatos()
+    mostrar_lista("Campeonatos", campeonatos)
     try:
-        id_camp = int(input("\nDigite o ID do campeonato que deseja atualizar: "))
+        id_camp = verifica_numero("\nDigite o ID do campeonato que deseja atualizar: ")
         campeonato = next((c for c in campeonatos if c['id'] == id_camp), None)
 
         if campeonato:
-            nova_fase = forca_opcao("Selecione a nova fase: ", ["Agendado", "Quartas", "Semifinal", "Final", "Encerrado"])
+            nova_fase = forca_opcao("Selecione a nova fase: ", ["agendado", "quartas", "semifinal", "final", "encerrado"])
             campeonato['fase'] = nova_fase
             print(f"✅ Campeonato '{campeonato['nome']}' atualizado para fase: {nova_fase}")
         else:
@@ -350,7 +335,7 @@ def apagar_item(lista, tipo):
         print(f"ID: {item['id']} | {item.get('titulo', item.get('nome', 'Sem nome'))}")
 
     try:
-        id_item = int(input(f"Digite o ID do {tipo} que deseja apagar: "))
+        id_item = verifica_numero(f"Digite o ID do {tipo} que deseja apagar: ")
         for i, item in enumerate(lista):
             if item["id"] == id_item:
                 lista.pop(i)
@@ -362,12 +347,14 @@ def apagar_item(lista, tipo):
 
 
 def registrar_noticia():
+
+    id = verifica_numero("Digite o ID da notícia: ")
     titulo = input("Digite o título da notícia: ")
     conteudo = input("Digite o conteúdo da notícia: ")
-    data = input("Digite a data da notícia (YYYY-MM-DD): ")
+    data = input("Digite a data da notícia (DD-MM-AAAA): ")
 
     nova_noticia = {
-        "id": len(noticias) + 1,
+        "id": id,
         "titulo": titulo,
         "conteudo": conteudo,
         "data": data
@@ -378,17 +365,18 @@ def registrar_noticia():
 
 def registrar_campeonato():
     print("\n--- Adicionar Campeonato ---")
+    id = verifica_numero("Digite o ID do campeonato: ")
     nome = input("Digite o nome do campeonato: ")
-    data = input("Digite a data do campeonato (DD/MM/AAAA): ")
+    data = input("Digite a data do campeonato (AAAA): ")
     local = input("Digite o local do campeonato: ")
 
     campeonato = {
-        "id": len(campeonatos) + 1,
+        "id": id,
         "nome": nome,
         "data": data,
         "local": local,
         "times": [],
-        "fase": "Agendado"
+        "fase": "agendado"
     }
 
     campeonatos.append(campeonato)
@@ -400,18 +388,17 @@ def registrar_jogo():
 
     tipo = forca_opcao("Escolha o tipo de jogo:", ["amador", "profissional"])
 
-    # id automático (último id + 1)
-    novo_id = len(jogos) + 1
-
     quadra_id = verifica_numero("Digite o ID da quadra: ")
-    data = input("Digite a data do jogo (AAAA-MM-DD): ")
+
+    id = verifica_numero("Digite o ID do jogo: ")
+    data = input("Digite a data do jogo (DD-MM-AAAA): ")
     hora = input("Digite a hora do jogo (HH:MM): ")
 
     if tipo == "amador":
         categoria = input("Digite a categoria (ex: Sub-17, Adulta, etc): ")
         taxa = float(input("Digite a taxa de inscrição: "))
         novo_jogo = {
-            "id": novo_id,
+            "id": id,
             "tipo": "amador",
             "status": "agendado",
             "quadra": quadra_id,
@@ -433,7 +420,7 @@ def registrar_jogo():
         campeonato_id = int(campeonato_id) if campeonato_id.strip() else None
 
         novo_jogo = {
-            "id": novo_id,
+            "id": id,
             "tipo": "profissional",
             "status": "agendado",
             "quadra": quadra_id,
@@ -457,12 +444,12 @@ def alterar_status_jogo():
         print(f"ID: {jogo['id']} | {jogo['data']} {jogo['hora']} - Status: {jogo['status']}")
 
     try:
-        id_jogo = int(input("Digite o ID do jogo que deseja alterar: "))
+        id_jogo = verifica_numero("Digite o ID do jogo que deseja alterar: ")
         for jogo in jogos:
             if jogo["id"] == id_jogo:
                 novo_status = forca_opcao(
                     "Escolha o novo status: ",
-                    ["Agendado", "Ao vivo", "Encerrado"]
+                    ["agendado", "ao vivo", "encerrado"]
                 )
                 jogo["status"] = novo_status
                 print("✅ Status alterado com sucesso!")
@@ -481,7 +468,7 @@ def menu_jogos():
         if escolha == "Adicionar jogo":
             registrar_jogo()
         elif escolha == "Listar jogos":
-            listar_jogos()
+            mostrar_lista("Jogos", jogos)
         elif escolha == "Alterar status de jogo":
             alterar_status_jogo()
         elif escolha == "Apagar jogo":
@@ -506,7 +493,7 @@ def proximos_encontros(usuario):
         print(f"{i}. {jogo['data']} {jogo['hora']} - Jogo amador ({jogo['categoria']}) | Status: {jogo['status']}")
         i += 1
 
-    opcao = int(input("\nDigite o número do jogo para se inscrever (ou 0 para cancelar): "))
+    opcao = verifica_numero("\nDigite o número do jogo para se inscrever (ou 0 para cancelar): ")
 
     if opcao == 0:
         return
@@ -516,7 +503,7 @@ def proximos_encontros(usuario):
     # descobrir username da jogadora logada
     username = None
     for user, dados in usuarios.items():
-        if dados is usuario:
+        if dados == usuario:
             username = user
             break
 
@@ -535,7 +522,7 @@ def meu_calendario(usuario):
     # Descobrir o username pela referência no dicionário
     username = None
     for user, dados in usuarios.items():
-        if dados is usuario:
+        if dados == usuario:
             username = user
             break
 
@@ -569,6 +556,7 @@ def ver_perfil(usuario):
 # Função para adicionar time
 def adicionar_time():
     print("\n--- Adicionar Time ---")
+    id =  verifica_numero("Digite o ID do time: ")
     nome = input("Nome do time: ")
 
     # verifica se já existe
@@ -580,22 +568,13 @@ def adicionar_time():
     tipo = forca_opcao("Tipo do time:", ["profissional", "amador"])
 
     novo_time = {
-        "id": len(times) + 1,
+        "id": id,
         "nome": nome,
         "jogadoras": [],
         "tipo": tipo
     }
     times.append(novo_time)
     print(f"✅ Time '{nome}' adicionado com sucesso!")
-
-    # Função para listar times
-def listar_times():
-    print("\n--- Lista de Times ---")
-    if not times:
-        print("Nenhum time cadastrado.")
-    else:
-        for t in times:
-            print(f"ID: {t['id']} | Nome: {t['nome']} | Tipo: {t['tipo']} | Jogadoras: {len(t['jogadoras'])}")
 
 
 # Funções de menu
@@ -608,7 +587,7 @@ def menu_visitante():
         if escolha == "Ver notícias":
             listar_noticias()
         elif escolha == "Calendário de jogos":
-            listar_jogos()
+           listar_jogos()
         elif escolha == "Criar conta":
             cadastrar_usuario()
             usuario_logado = login_usuario()
@@ -664,7 +643,7 @@ def menu_times():
         if escolha == "Adicionar time":
             adicionar_time()
         elif escolha == "Listar times":
-            listar_times()
+            mostrar_lista("Times", times)
         elif escolha == "Apagar time":
             apagar_item(times, "time")
         elif escolha == "Voltar":
@@ -679,7 +658,7 @@ def menu_noticias():
         if escolha == "Adicionar notícia":
             registrar_noticia()
         elif escolha == "Listar notícias":
-            listar_noticias()
+            mostrar_lista("Notícias", noticias)
         elif escolha == "Apagar notícia":
             apagar_item(noticias, "notícia")
         elif escolha == "Voltar":
@@ -695,7 +674,7 @@ def menu_campeonatos():
         if escolha == "Adicionar campeonato":
             registrar_campeonato()
         elif escolha == "Listar campeonatos":
-            listar_campeonatos()
+           mostrar_lista("Campeonatos", campeonatos)
         elif escolha == "Atualizar fase":
             atualizar_fase_campeonato()
         elif escolha == "Apagar campeonato":
