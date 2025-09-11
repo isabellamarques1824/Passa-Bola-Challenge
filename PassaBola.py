@@ -326,6 +326,26 @@ def atualizar_fase_campeonato():
     except ValueError:
         print("❌ ID inválido.")
 
+def apagar_item_simples(lista, tipo):
+    if not lista:
+        print(f"Nenhum {tipo} encontrado.")
+        return
+
+    for i, item in enumerate(lista, 1):
+        print(f"{i}. {item}")
+
+    try:
+        pos = verifica_numero(f"Digite o número do {tipo} que deseja apagar: ")
+        if 1 <= pos <= len(lista):
+            removido = lista.pop(pos - 1)
+            print(f"✅ {tipo.capitalize()} '{removido}' apagado com sucesso!")
+        else:
+            print("⚠️ Número inválido.")
+    except ValueError:
+        print("ID inválido.")
+
+
+
 def apagar_item(lista, tipo):
     if not lista:
         print(f"Nenhum {tipo} cadastrado.")
@@ -381,6 +401,39 @@ def registrar_campeonato():
 
     campeonatos.append(campeonato)
     print(f"✅ Campeonato '{nome}' adicionado com sucesso!")
+
+def adicionar_item(usuario, lista_opcoes, chave, nome_lista):
+
+    print(f"\n--- Adicionar {nome_lista} ---")
+    mostrar_lista(f"Opções de {nome_lista}", lista_opcoes)
+
+    escolha = input(f"Digite o nome do {nome_lista[:-1]} que deseja adicionar: ")
+
+    # Verifica se existe na lista de opções
+    if escolha not in lista_opcoes:
+        print(f"❌ {nome_lista[:-1].capitalize()} não encontrado.")
+        return
+
+    # Navega pelo dicionário, criando subdicionários se necessário
+    keys = chave.split(".")
+    d = usuario
+    for k in keys[:-1]:
+        if k not in d or not isinstance(d[k], dict):
+            d[k] = {}
+        d = d[k]
+
+    final_key = keys[-1]
+    if final_key not in d or not isinstance(d[final_key], list):
+        d[final_key] = []
+
+    # Verifica duplicados
+    if escolha in d[final_key]:
+        print(f"⚠️ {nome_lista[:-1].capitalize()} já está na sua lista de {nome_lista}.")
+        return
+
+    # Adiciona
+    d[final_key].append(escolha)
+    print(f"✅ {nome_lista[:-1].capitalize()} adicionado com sucesso!")
 
 
 def registrar_jogo():
@@ -543,17 +596,42 @@ def meu_calendario(usuario):
 # ver perfil
 
 def ver_perfil(usuario):
-    logo()
-    print("--- Informações do Perfil ---")
-    print(f"Nome: {usuario['nome']} {usuario.get('sobrenome', '')}")
-    print(f"Idade: {usuario['idade']}")
-    print(f"Email: {usuario['email']}")
+    while True:
+        logo()
+        print("--- Informações do Perfil ---")
+        print(f"Nome: {usuario['nome']} {usuario.get('sobrenome', '')}")
+        print(f"Idade: {usuario['idade']}")
+        print(f"Email: {usuario['email']}")
 
-    mostrar_lista("Amigos", usuario.get("amigos", []))
-    mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
-    mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
+        mostrar_lista("Amigos", usuario.get("amigos", []))
+        mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
+        mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
 
-# Função para adicionar time
+        escolha = forca_opcao("\nAdcionar ou apagar(Amigos, Jogos, Times): ", ["Apagar", "Adicionar"] )
+        if escolha == "Adicionar":
+            sub_escolha = forca_opcao("Escolha uma opção: ", ["Amigos", "Jogadoras favoritas", "Times favoritos", "Voltar"])
+            if sub_escolha == "Amigos":
+                adicionar_item(usuario, list(usuarios.keys()), "amigos", "amigos")
+            elif sub_escolha == "Times favoritos":
+                adicionar_item(usuario, [t["nome"] for t in times], "favoritos.times", "times favoritos")
+            elif sub_escolha == "Jogadoras favoritas":
+                adicionar_item(usuario, [u for u in usuarios if usuarios[u]["tipo"] == "jogadora"],"favoritos.jogadoras", "jogadoras favoritas")
+            else:
+                break
+
+        else:
+            if escolha == "Apagar":
+                sub_escolha = forca_opcao("Escolha uma opção: ",["Amigos", "Jogadoras favoritas", "Times favoritos", "Voltar"])
+                if sub_escolha == "Amigos":
+                    apagar_item_simples(usuario["amigos"], "amigo")
+                elif sub_escolha == "Jogadoras favoritas":
+                    apagar_item_simples(usuario["favoritos"]["jogadoras"], "jogadora favorita")
+                elif sub_escolha == "Times favoritos":
+                    apagar_item_simples(usuario["favoritos"]["times"], "time favorito")
+                elif sub_escolha == "Voltar":
+                    break
+
+        # Função para adicionar time
 def adicionar_time():
     print("\n--- Adicionar Time ---")
     id =  verifica_numero("Digite o ID do time: ")
