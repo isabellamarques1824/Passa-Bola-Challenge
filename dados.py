@@ -1,8 +1,22 @@
+"""
+dados.py
+
+Contém todas as estruturas de dados do sistema PassaBola:
+- Usuários
+- Jogos
+- Campeonatos
+- Times
+- Notícias
+
+Este arquivo centraliza os dicionários e listas que armazenam
+as informações do sistema, sendo importado em funcoes.py.
+"""
+
 # =========================================
 # Estruturas de dados do sistema
 # =========================================
 
-# Dicionário - Usuários
+# Dicionário que armazena os dados dos usuários registrados do sistema Passa a Bola
 
 usuarios = {
     "isa123": {
@@ -92,19 +106,22 @@ usuarios = {
     }
 }
 
-# Lista de times
+# Lista de dicionários que armazena os dados dos times registrados do sistema Passa a Bola
+
 times = [
     {"id": 1, "nome": "Flamengo", "jogadoras": ["jogadora_paula"], "tipo": "profissional"},
     {"id": 2, "nome": "Fluminense", "jogadoras": ["jogadora_luiza"], "tipo": "profissional"}
 ]
 
-# Quadras disponíveis
+# Lista de dicionários que armazena os dados das quadras que acontecem os jogos e campeonatos do sistema Passa a Bola
+
 quadras = [
     {"id": 1, "nome": "Quadra Central", "local": "Rua A, nº 123"},
     {"id": 2, "nome": "Arena Zona Sul", "local": "Av. B, nº 456"}
 ]
 
-# Notícias e artigos
+# Lista de dicionários que armazena os dados das notícias do sistema Passa a Bola
+
 noticias = [
     {
         "id": 1,
@@ -120,7 +137,8 @@ noticias = [
     }
 ]
 
-# Jogos: amadores e profissionais
+# Lista de dicionários que armazena os dados dos jogos do sistema Passa a Bola
+
 jogos = [
     {
         "id": 1,
@@ -147,7 +165,8 @@ jogos = [
     }
 ]
 
-# Campeonatos
+# Lista de dicionários que armazena os dados dos campeonatos do sistema Passa a Bola
+
 campeonatos = [
     {
     "id": 1,
