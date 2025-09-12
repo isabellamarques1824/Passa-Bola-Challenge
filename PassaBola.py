@@ -29,6 +29,9 @@ usuarios = {
         "senha": "paula123",
         "tipo": "jogadora",
         "nivel": "profissional",
+        "posicao": "goleira",
+        "experiencia": "não",
+        "cidade": "São Paulo",
         "categoria": "Adulta",
         "nome": "Paula",
         "sobrenome": "Alves",
@@ -42,6 +45,9 @@ usuarios = {
         "senha": "lu456",
         "tipo": "jogadora",
         "nivel": "profissional",
+        "posicao": "atacante",
+        "experiencia": "sim",
+        "cidade": "São Paulo",
         "categoria": "Adulta",
         "nome": "Luiza",
         "sobrenome": "Carvalho",
@@ -365,6 +371,26 @@ def apagar_item(lista, tipo):
     except ValueError:
         print("ID inválido.")
 
+def formulario_profissional(usuario):
+    print("\n--- Formulário para se tornar profissional ---")
+    print("Preencha as informações abaixo:")
+
+    posicao = input("Qual sua posição em campo? ")
+    experiencia = input("Tem experiência anterior em times? (sim/não) ")
+    cidade = input("Cidade/Estado onde você joga: ")
+
+    # Salva direto no dicionário do usuário
+    usuario["posicao"] = posicao
+    usuario["experiencia"] = experiencia
+    usuario["cidade"] = cidade
+
+    # Atualiza categoria para profissional
+    usuario["nivel"] = "profissional"
+
+    print("\n✅ Formulário enviado com sucesso!")
+    print("Agora você é uma jogadora profissional!\n")
+
+
 
 def registrar_noticia():
 
@@ -607,7 +633,7 @@ def ver_perfil(usuario):
         mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
         mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
 
-        escolha = forca_opcao("\nAdcionar ou apagar(Amigos, Jogos, Times): ", ["Apagar", "Adicionar"] )
+        escolha = forca_opcao("\nAdicionar ou apagar(Amigos, Jogadoras, Times): ", ["Apagar", "Adicionar"] )
         if escolha == "Adicionar":
             sub_escolha = forca_opcao("Escolha uma opção: ", ["Amigos", "Jogadoras favoritas", "Times favoritos", "Voltar"])
             if sub_escolha == "Amigos":
@@ -656,6 +682,41 @@ def adicionar_time():
 
 
 # Funções de menu
+def menu_profissional(usuario, campeonatos):
+    print("\n===============================")
+    print("      🌟 Área Profissional 🌟   ")
+    print("===============================")
+
+    # Campeonatos
+    print("\n--- 🏆 Campeonatos Disponíveis ---")
+    for camp in campeonatos:
+        print(f"- {camp['nome']} | Data: {camp['data']} | Local: {camp['local']}")
+
+    # Jogadoras em destaque
+    print("\n--- ⭐ Jogadoras em Destaque ---")
+    for username, dados in usuarios.items():
+        if dados.get("categoria") == "profissional":
+            print(f"- {dados['nome']} {dados['sobrenome']}")
+
+    # Mural de oportunidades
+    print("\n--- 📌 Mural de Oportunidades ---")
+    print("Times estão procurando jogadoras para fortalecer suas equipes!\n")
+    for time in times:
+        print(f"🏟️ O time {time['nome']} está contratando jogadoras!")
+        escolha = input(f"Deseja se inscrever para o {time['nome']}? (s/n) ")
+        if escolha.lower() == "s":
+            print("✅ Inscrição enviada! Seu perfil será avaliado.\n")
+        else:
+            print("⚠️ Você optou por não se inscrever.\n")
+
+    print("===============================")
+
+def profissional(usuario):
+    if usuario.get("categoria") == "profissional":
+        menu_profissional(usuario,campeonatos)
+    else:
+        formulario_profissional(usuario)
+
 def menu_visitante():
     while True:
         escolha = forca_opcao(
@@ -694,6 +755,7 @@ def menu_comum(usuario):
 
 def menu_jogadora(usuario):
     while True:
+        logo()
         escolha = forca_opcao(
             f"\n{usuario['nome']} (jogadora), escolha uma opção: ",
             ["Meu perfil", "Meu calendário", "Próximos encontros", "Profissional", "Sair"]
@@ -705,7 +767,7 @@ def menu_jogadora(usuario):
         elif escolha == "Próximos encontros":
             proximos_encontros(usuario)
         elif escolha == "Profissional":
-            print("aqui vai o profissional(n fiz ainda)")
+            profissional(usuario)
         elif escolha == "Sair":
             print("Logout realizado.")
             break
