@@ -86,25 +86,30 @@ def cadastrar_usuario():
             print("Erro: nome de usuário já existe!")
             continue
 
-        senha = input("Digite a senha: ")
-        nome = input("Nome: ")
-        sobrenome = input("Sobrenome: ")
-        idade = verifica_numero("Digite a sua idade: ")
-        email = input("Email: ")
-
-        # tipo de usuário (comum ou jogadora ou admin)
-        tipo = forca_opcao("Escolha o tipo de usuário:", ["comum", "jogadora", "administrador"])
+        novo_usuario_input = {
+            "senha": "Digite a sua senha: ",
+            "nome": "Digite o seu nome: ",
+            "sobrenome": "Digite o seu sobrenome: ",
+            "idade": "Digite a sua idade: ",
+            "email": "Digite o seu email: ",
+        }
 
         novo_usuario = {
-            "senha": senha,
-            "tipo": tipo,
-            "nome": nome,
-            "sobrenome": sobrenome,
-            "idade": idade,
-            "email": email,
             "amigos": [],
             "favoritos": {"jogadoras": [], "times": []}
         }
+
+        for key in novo_usuario_input.keys():
+            if key == "idade":
+                dado = verifica_numero(novo_usuario_input[key])
+                novo_usuario[key] = dado
+            else:
+                dado = input(novo_usuario_input[key])
+                novo_usuario[key] = dado
+
+        # tipo de usuário (comum ou jogadora ou admin)
+        tipo = forca_opcao("Escolha o tipo de usuário:", ["comum", "jogadora", "administrador"])
+        novo_usuario["tipo"] = tipo
 
         # Se for jogadora
 
@@ -113,6 +118,7 @@ def cadastrar_usuario():
             rg = input("Digite o seu RG: ")
 
             # categoria automática pela idade
+            idade = novo_usuario["idade"]
             if idade <= 15:
                 categoria = "Sub-15"
             elif idade <= 17:
