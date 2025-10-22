@@ -178,30 +178,35 @@ def ver_perfil(usuario):
         mostrar_lista("Times Favoritos", usuario["favoritos"]["times"])
         mostrar_lista("Jogadoras Favoritas", usuario["favoritos"]["jogadoras"])
 
-        escolha = forca_opcao("\nAdicionar ou apagar(Amigos, Jogadoras, Times): ", ["Apagar", "Adicionar", "Voltar"] )
-        if escolha == "Adicionar":
-            sub_escolha = forca_opcao("Escolha uma opção: ", ["Amigos", "Jogadoras favoritas", "Times favoritos", "Voltar"])
-            if sub_escolha == "Amigos":
-                adicionar_item(usuario, list(usuarios.keys()), "amigos", "amigos")
-            elif sub_escolha == "Times favoritos":
-                adicionar_item(usuario, [t["nome"] for t in times], "favoritos.times", "times favoritos")
-            elif sub_escolha == "Jogadoras favoritas":
-                adicionar_item(usuario, [u for u in usuarios if usuarios[u]["tipo"] == "jogadora"],"favoritos.jogadoras", "jogadoras favoritas")
-            else:
-                break
+        print("\n--- ⚙️ Central de Personalização do Perfil ---")
+        escolha = forca_opcao("O que você deseja fazer?",["Editar perfil", "Gerenciar amigos", "Gerenciar jogadoras favoritas", "Gerenciar times favoritos","Voltar"])
 
-        elif escolha == "Apagar":
-            if escolha == "Apagar":
-                sub_escolha = forca_opcao("Escolha uma opção: ",["Amigos", "Jogadoras favoritas", "Times favoritos", "Voltar"])
-                if sub_escolha == "Amigos":
-                    apagar_item_simples(usuario["amigos"], "amigo")
-                elif sub_escolha == "Jogadoras favoritas":
-                    apagar_item_simples(usuario["favoritos"]["jogadoras"], "jogadora favorita")
-                elif sub_escolha == "Times favoritos":
-                    apagar_item_simples(usuario["favoritos"]["times"], "time favorito")
-                elif sub_escolha == "Voltar":
-                    break
-        else:
+        if escolha == "Editar perfil":
+            atualizar(usuario)
+
+        elif escolha == "Gerenciar amigos":
+            acao = forca_opcao("O que deseja fazer com seus amigos?", ["Adicionar", "Remover", "Voltar"])
+            if acao == "Adicionar":
+                adicionar_item(usuario, list(usuarios.keys()), "amigos", "amigos")
+            elif acao == "Remover":
+                apagar_item_simples(usuario["amigos"], "amigo")
+
+        elif escolha == "Gerenciar jogadoras favoritas":
+            acao = forca_opcao("O que deseja fazer com suas jogadoras favoritas?", ["Adicionar", "Remover", "Voltar"])
+            if acao == "Adicionar":
+                adicionar_item(usuario, [u for u in usuarios if usuarios[u]["tipo"] == "jogadora"],
+                               "favoritos.jogadoras", "jogadoras favoritas")
+            elif acao == "Remover":
+                apagar_item_simples(usuario["favoritos"]["jogadoras"], "jogadora favorita")
+
+        elif escolha == "Gerenciar times favoritos":
+            acao = forca_opcao("O que deseja fazer com seus times favoritos?", ["Adicionar", "Remover", "Voltar"])
+            if acao == "Adicionar":
+                adicionar_item(usuario, [t["nome"] for t in times], "favoritos.times", "times favoritos")
+            elif acao == "Remover":
+                apagar_item_simples(usuario["favoritos"]["times"], "time favorito")
+
+        elif escolha == "Voltar":
             break
 
 # =========================================
@@ -287,6 +292,16 @@ def adicionar_item(usuario, lista_opcoes, chave, nome_lista):
     d[final_key].append(escolha)
     print(f"✅ {nome_lista[:-1].capitalize()} adicionado com sucesso!")
 
+
+def atualizar(usuario_logado):
+    logo()
+    print('---Edição de Perfil ---')
+    campos_editaveis = ["nome", "sobrenome", "idade", "email", "senha"]
+    for key in campos_editaveis:
+        if forca_opcao(f"Você quer atualizar {key}?",['sim','não']) == 'sim':
+            novo_valor = input(f"Diga o novo {key}: ")
+            usuarios[usuario_logado[key]] = novo_valor
+    return
 
 # =========================================
 # 4. Funções de jogos
