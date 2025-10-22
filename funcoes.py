@@ -300,7 +300,7 @@ def atualizar(usuario_logado):
     for key in campos_editaveis:
         if forca_opcao(f"Você quer atualizar {key}?",['sim','não']) == 'sim':
             novo_valor = input(f"Diga o novo {key}: ")
-            usuarios[usuario_logado[key]] = novo_valor
+            usuario_logado[key] = novo_valor
     return
 
 # =========================================
