@@ -1,4 +1,5 @@
-from dados import *
+import json
+from dados import usuarios, times, quadras, noticias, jogos, campeonatos
 
 """
 funcoes.py
@@ -11,6 +12,43 @@ Contém todas as funções do sistema PassaBola:
 
 Este arquivo deve ser importado pelo main.py para execução do sistema.
 """
+
+# =========================================
+# 1. Funções de persistência de dados
+# =========================================
+
+CAMINHO_JSON = "dados.json"
+
+def carregar_dados():
+    try:
+        with open(CAMINHO_JSON, "r", encoding="utf-8") as arquivo:
+            return json.load(arquivo)
+    except FileNotFoundError:
+        dados_iniciais = {
+            "usuarios": usuarios,
+            "times": times,
+            "quadras": quadras,
+            "noticias": noticias,
+            "jogos": jogos,
+            "campeonatos": campeonatos
+        }
+        salvar_dados(dados_iniciais)
+        return dados_iniciais
+
+def salvar_dados(dados):
+    with open(CAMINHO_JSON, "w", encoding="utf-8") as arquivo:
+        json.dump(dados, arquivo, indent=4, ensure_ascii=False)
+
+def salvar_estado_atual():
+    dados_principais = {
+        "usuarios": usuarios,
+        "times": times,
+        "quadras": quadras,
+        "noticias": noticias,
+        "jogos": jogos,
+        "campeonatos": campeonatos
+    }
+    salvar_dados(dados_principais)
 
 # =========================================
 # 1. Funções helpers / utilitárias
@@ -131,6 +169,7 @@ def cadastrar_usuario():
 
         usuarios[username] = novo_usuario
         print(f"Usuário {username} cadastrado com sucesso!")
+        salvar_estado_atual()
         break
 
 # Essa função faz o login do usuário
@@ -234,7 +273,7 @@ def apagar_item(lista, tipo):
         print(f"⚠️ {tipo.capitalize()} não encontrado.")
     except ValueError:
         print("ID inválido.")
-
+    salvar_estado_atual()
 
 # Essa função apaga itens de listas e dicionários - modo usuário
 
@@ -255,6 +294,7 @@ def apagar_item_simples(lista, tipo):
             print("⚠️ Número inválido.")
     except ValueError:
         print("ID inválido.")
+    salvar_estado_atual()
 
 
 # Essa função adiciona itens para listas e dicionários
@@ -291,6 +331,7 @@ def adicionar_item(usuario, lista_opcoes, chave, nome_lista):
     # Adiciona
     d[final_key].append(escolha)
     print(f"✅ {nome_lista[:-1].capitalize()} adicionado com sucesso!")
+    salvar_estado_atual()
 
 
 def atualizar(usuario_logado):
@@ -360,6 +401,7 @@ def registrar_jogo():
 
     jogos.append(novo_jogo)
     print("✅ Jogo registrado com sucesso!")
+    salvar_estado_atual()
 
 
 # Essa função altera o status dos jogos
@@ -386,6 +428,7 @@ def alterar_status_jogo():
         print("⚠️ Jogo não encontrado.")
     except ValueError:
         print("ID inválido.")
+    salvar_estado_atual()
 
 
 # Essa função printa os jogos de forma bonitinha
@@ -426,6 +469,7 @@ def registrar_campeonato():
 
     campeonatos.append(campeonato)
     print(f"✅ Campeonato '{nome}' adicionado com sucesso!")
+    salvar_estado_atual()
 
 # Essa função atualiza a fase de um campeonato
 
@@ -443,6 +487,7 @@ def atualizar_fase_campeonato():
             print("❌ Campeonato não encontrado.")
     except ValueError:
         print("❌ ID inválido.")
+    salvar_estado_atual()
 
 
 # =========================================
@@ -467,6 +512,7 @@ def registrar_noticia():
 
     noticias.append(nova_noticia)
     print("✅ Notícia registrada com sucesso!")
+    salvar_estado_atual()
 
 
 # Essa função printa as notícias de forma bonitinha
