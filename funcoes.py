@@ -364,7 +364,13 @@ def registrar_jogo():
 
     if tipo == "amador":
         categoria = input("Digite a categoria (ex: Sub-17, Adulta, etc): ")
-        taxa = float(input("Digite a taxa de inscrição: "))
+        while True:
+            try:
+                taxa = float(input("Digite a taxa de inscrição: "))
+                break
+            except ValueError:
+                print('O valor da taxa precisa ser um número! E atenção ⚠️: O sistem aceita apenas pontos(.) vírgulas(,) não são aceitas.')
+
         novo_jogo = {
             "id": id,
             "tipo": "amador",
@@ -384,8 +390,16 @@ def registrar_jogo():
         time1 = verifica_numero("Digite o ID do primeiro time: ")
         time2 = verifica_numero("Digite o ID do segundo time: ")
 
-        campeonato_id = input("Digite o ID do campeonato (ou deixe vazio se não houver): ")
-        campeonato_id = int(campeonato_id) if campeonato_id.strip() else None
+        while True:
+            campeonato_id_str = input("Digite o ID do campeonato (ou deixe vazio se não houver): ")
+            if not campeonato_id_str.strip():
+                campeonato_id = None
+                break
+            try:
+                campeonato_id = int(campeonato_id_str)
+                break
+            except ValueError:
+                print("❌ Erro: O ID do campeonato deve ser um número inteiro.")
 
         novo_jogo = {
             "id": id,
@@ -642,22 +656,24 @@ def proximos_encontros(usuario):
     if opcao == 0:
         return
 
-    jogo_escolhido = jogos_amadores[opcao - 1]
+    try:
+        jogo_escolhido = jogos_amadores[opcao - 1]
 
-    # descobrir username da jogadora logada
-    username = None
-    for user, dados in usuarios.items():
-        if dados == usuario:
-            username = user
-            break
+        # descobrir username da jogadora logada
+        username = None
+        for user, dados in usuarios.items():
+            if dados == usuario:
+                username = user
+                break
 
-    # checar inscrição
-    if username in jogo_escolhido["inscritas"]:
-        print("⚠️ Você já está inscrita nesse jogo!")
-    else:
-        jogo_escolhido["inscritas"].append(username)
-        print("✅ Inscrição realizada com sucesso!")
-
+        # checar inscrição
+        if username in jogo_escolhido["inscritas"]:
+            print("⚠️ Você já está inscrita nesse jogo!")
+        else:
+            jogo_escolhido["inscritas"].append(username)
+            print("✅ Inscrição realizada com sucesso!")
+    except IndexError:
+        print(f"❌ Erro: Opção inválida. Por favor, escolha um número entre 1 e {len(jogos_amadores)}.")
 
 
 # Essa função mostra o calendario de jogos das jogadoras
