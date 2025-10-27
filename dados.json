@@ -139,7 +139,7 @@
                 ],
                 "times": []
             },
-            "senha": "treli1",
+            "senha": "treli2",
             "nome": "henrique",
             "sobrenome": "sizil",
             "idade": 19,
@@ -159,6 +159,21 @@
             "email": "isa@gmail.com",
             "tipo": "jogadora",
             "rg": "123456678",
+            "categoria": "Adulta"
+        },
+        "jogadora_david": {
+            "amigos": [],
+            "favoritos": {
+                "jogadoras": [],
+                "times": []
+            },
+            "senha": "handsome",
+            "nome": "David",
+            "sobrenome": "Cruz",
+            "idade": 27,
+            "email": "handsomed@gmail.com",
+            "tipo": "jogadora",
+            "rg": "9855763124",
             "categoria": "Adulta"
         }
     },
